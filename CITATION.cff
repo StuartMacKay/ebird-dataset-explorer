@@ -1,0 +1,14 @@
+abstract: A web site / workbench for analysing eBird checklists
+authors:
+  - name: Stuart MacKay
+cff-version: 1.2.0
+date-released: 2024-12-01
+keywords:
+  - eBird
+  - checklists
+  - Django
+license: MIT License
+message: If you use this software, please cite it using the metadata from this file.
+repository-code: "https://github.com/StuartMacKay/ebird-reports"
+title: eBird Reports
+version: 0.0.0
