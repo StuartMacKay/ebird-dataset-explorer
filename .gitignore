@@ -16,3 +16,6 @@ __pycache__/
 !.gitkeep
 !.pre-commit-config.yaml
 !.python-version
+
+# project artefacts
+*.sqlite3
