@@ -1,14 +1,13 @@
-# eBird Reports
+# eBird Dataset Browser
 
-eBird Reports is a Django-based web site for analysing checklists submitted
-to eBird and publishing the results.
+eBird Dataset Browser is a Django-based web site for browsing through,
+and showing analytics for the eBird Basic Dataset v1.14.
 
 ## Links
 
-* Documentation: http://ebird-reports.readthedocs.org/
-* Issues: https://github.com/StuartMacKay/ebird-reports/issues
-* Repository: https://github.com/StuartMacKay/ebird-reports
+* Issues: https://github.com/StuartMacKay/ebird-dataset-browser/issues
+* Repository: https://github.com/StuartMacKay/ebird-dataset-browser
 
 ## Licence
 
-eBird Reports is available under the terms of the [MIT](https://opensource.org/licenses/MIT) licence.
+eBird Dataset Browser is available under the terms of the [MIT](https://opensource.org/licenses/MIT) licence.
