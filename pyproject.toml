@@ -73,14 +73,11 @@ testpaths = [
     "tests/unit"
 ]
 
-[tool.ruff]
-target-version = "py312"
-
 [tool.uv]
 dev-dependencies = [
     "bump-my-version>=0.28.0",
     "django-debug-toolbar>=4.4.6",
     "pre-commit>=4.0.1",
     "pytest>=8.3.3",
-    "ruff>=0.7.2",
+    "ruff>=0.8.0",
 ]
