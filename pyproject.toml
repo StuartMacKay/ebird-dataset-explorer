@@ -5,7 +5,7 @@ description = "A Django-based web site for generating reports from eBird checkli
 authors = [
   {name = "Stuart MacKay", email = "smackay@flagstonesoftware.com"},
 ]
-license = {text = "MIT License"}
+license = {file = "LICENSE"}
 readme = "README.md"
 requires-python = ">= 3.12"
 dependencies = [
