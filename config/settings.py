@@ -6,18 +6,18 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 
 import os
 import socket
-
-from django.core.exceptions import ImproperlyConfigured
+from email.utils import parseaddr
 
 import environ  # type: ignore
+from django.core.exceptions import ImproperlyConfigured
 
 # #######################
 #   PROJECT DIRECTORIES
 # #######################
 
-MAIN_DIR = os.path.dirname(os.path.abspath(__file__))
-ROOT_DIR = os.path.dirname(MAIN_DIR)
-DATA_DIR = os.path.abspath(os.path.join(ROOT_DIR, "data"))
+CONFIG_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.dirname(CONFIG_DIR)
+DEPLOY_DIR = os.path.dirname(ROOT_DIR)
 
 # ###############
 #   ENVIRONMENT
@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.sitemaps",
     "django.contrib.admin",
+    "users.apps.Config",
+    "dataset.apps.Config",
 ]
 
 MIDDLEWARE = [
@@ -76,9 +78,9 @@ if DJANGO_ENV == "development" and DEBUG:
 #   WEB SERVER
 # ##############
 
-ROOT_URLCONF = "main.urls"
+ROOT_URLCONF = "config.urls"
 
-WSGI_APPLICATION = "main.wsgi.application"
+WSGI_APPLICATION = "config.wsgi.application"
 
 if DEBUG:
     # From cookiecutter-django: We need to configure an IP address to
@@ -99,7 +101,11 @@ WATCHMAN_TOKENS = env.str("DJANGO_WATCHMAN_TOKENS", None)
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
-DATABASES = {"default": env.db_url(default=f"sqlite:///{DATA_DIR}/reports.sqlite3")}
+AUTH_USER_MODEL = "users.User"
+
+DATABASES = {
+    "default": env.db_url(default="postgres://project:password@localhost:5432/project")
+}
 
 # ###########
 #   CACHING
@@ -215,17 +221,17 @@ STATICFILES_FINDERS = [
 ]
 
 STATICFILES_DIRS = [
-    os.path.join(MAIN_DIR, "static"),
+    os.path.join(ROOT_DIR, "static"),
 ]
 
 # DJANGO_STATIC_HOST only needs to be set when using a CDN such as CloudFront
 # to cache the files served by whitenoise.
 
-STATIC_ROOT = env.str("DJANGO_STATIC_ROOT", default=os.path.join(ROOT_DIR, "static"))
+STATIC_ROOT = env.str("DJANGO_STATIC_ROOT", default=os.path.join(DEPLOY_DIR, "static"))
 STATIC_HOST = env.str("DJANGO_STATIC_HOST", default="")
 STATIC_URL = STATIC_HOST + "/static/"
 
-MEDIA_ROOT = env.str("DJANGO_MEDIA_ROOT", default=os.path.join(ROOT_DIR, "media"))
+MEDIA_ROOT = env.str("DJANGO_MEDIA_ROOT", default=os.path.join(DEPLOY_DIR, "media"))
 MEDIA_URL = "/media/"
 
 # S3 storage options for serving uploaded files from an AWS S3 Bucket.
@@ -286,6 +292,11 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "json",
         },
+        "mail_admins": {
+            "level": "ERROR",
+            "class": "django.utils.log.AdminEmailHandler",
+            "include_html": True,
+        },
     },
     "loggers": {
         "django": {
@@ -322,6 +333,11 @@ if DSN := env.str("DJANGO_SENTRY_DSN", default=""):
 vars().update(env.email("DJANGO_EMAIL_URL", default="consolemail://"))
 
 EMAIL_USE_SSL = env.bool("DJANGO_EMAIL_USE_SSL", default="True")
+
+if django_admins := env.str("DJANGO_ADMINS", ""):
+    ADMINS = tuple(parseaddr(email) for email in django_admins.split(","))
+    LOGGING["loggers"]["django"]["handlers"].append("mail_admins")
+    LOGGING["loggers"][""]["handlers"].append("mail_admins")
 
 # ########
 #   SITE
