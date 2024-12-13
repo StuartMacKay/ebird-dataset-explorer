@@ -6,6 +6,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 
 import os
 import socket
+import sys
 from email.utils import parseaddr
 
 import environ  # type: ignore
@@ -18,6 +19,8 @@ from django.core.exceptions import ImproperlyConfigured
 CONFIG_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(CONFIG_DIR)
 DEPLOY_DIR = os.path.dirname(ROOT_DIR)
+
+sys.path.insert(0, os.path.join(ROOT_DIR, "apps"))
 
 # ###############
 #   ENVIRONMENT
