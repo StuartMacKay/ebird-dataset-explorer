@@ -81,4 +81,5 @@ dev-dependencies = [
     "pre-commit>=4.0.1",
     "pytest>=8.3.3",
     "ruff>=0.8.0",
+    "rust-just>=1.38.0",
 ]
