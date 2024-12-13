@@ -13,6 +13,7 @@ __pycache__/
 !.envrc
 !.gitignore
 !.gitkeep
+!.nvmrc
 !.pre-commit-config.yaml
 
 # project artefacts
