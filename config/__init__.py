@@ -1,4 +1,1 @@
-__version__ = "0.0.0"
-__author__ = "Stuart MacKay"
-__email__ = "smackay@flagstonesoftware.com"
-__license__ = "MIT License"
+__version__ = "2025.07.15"

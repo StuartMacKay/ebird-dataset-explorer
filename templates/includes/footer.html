@@ -1,0 +1,31 @@
+{% load i18n static %}
+<div class="container-fluid">
+  <div class="row p-3 pb-0 border-top">
+    <div class="col-md-3 col-lg-4">
+      <ul class="nav flex-column">
+        <li class="nav-item mb-2">
+          <a href="{% url 'about' %}" class="nav-link p-0 fs-5 text-body-secondary">{% translate "About" %}</a>
+        </li>
+        <li class="nav-item mb-2">
+          <a href="{% url 'updates:list' %}" class="nav-link p-0 fs-5 text-body-secondary">{% translate "What's New" %}</a>
+        </li>
+        <li class="nav-item mb-2">
+          <a href="{% url 'contact' %}" class="nav-link p-0 fs-5 text-body-secondary">{% trans "Contact" %}</a>
+        </li>
+      </ul>
+    </div>
+    <div class="col-md-3 col-lg-4">
+      <ul class="nav flex-column">
+        <li class="nav-item mb-2">
+        </li>
+      </ul>
+    </div>
+  </div>
+    <div class="col-md-6 col-lg-4">
+      <ul class="nav flex-column">
+        <li class="nav-item mb-2">
+        </li>
+      </ul>
+    </div>
+  <div class="text-body-secondary text-center py-2">© 2025 eBird Dataset Explorer</div>
+</div>

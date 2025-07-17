@@ -1,8 +1,3 @@
-# Python
-__pycache__/
-*.py[co]
-*.egg*
-
 # Editor temp files
 *~
 
@@ -13,9 +8,17 @@ __pycache__/
 !.envrc
 !.gitignore
 !.gitkeep
-!.nvmrc
 !.pre-commit-config.yaml
 
-# project artefacts
-*.csv
+# Python
+__pycache__/
+*.py[co]
+*.egg*
+
+# Django
+media/
+static/
+
+# data
 *.sqlite3
+*.csv

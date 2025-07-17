@@ -1,0 +1,41 @@
+{% extends "page.html" %}
+{% load i18n %}
+
+{% block title %}{% translate "What's New" %}{% endblock %}
+
+{% block content %}
+  <div class="container-fluid static mb-3">
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <h1 class="pt-2">{% translate "What's New" %}</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <p>
+          {% trans "A list of what has changed on this site, whether it is new features, editorial decisions on observations, or just general news." %}
+        </p>
+      </div>
+    </div>
+    {% for object in page_obj.object_list %}
+      <div class="row">
+        <div class="col">
+          <h2 class="mb-0">{{ object.get_title }}</h2>
+          <small class="text-muted">
+            {{ object.published_at|date:"jS M Y" }}
+          </small>
+          <div class="mb-4">
+            {{ object.get_contents }}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+    {% block pagination %}
+      {% include "updates/includes/list-pagination.html" %}
+    {% endblock %}
+  </div>
+{% endblock %}

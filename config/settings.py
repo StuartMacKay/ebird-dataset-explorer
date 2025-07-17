@@ -7,10 +7,11 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 import os
 import socket
 import sys
-from email.utils import parseaddr
+
+from django.core.exceptions import ImproperlyConfigured
+from django.utils.translation import gettext_lazy as _
 
 import environ  # type: ignore
-from django.core.exceptions import ImproperlyConfigured
 
 # #######################
 #   PROJECT DIRECTORIES
@@ -18,7 +19,8 @@ from django.core.exceptions import ImproperlyConfigured
 
 CONFIG_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(CONFIG_DIR)
-DEPLOY_DIR = os.path.dirname(ROOT_DIR)
+DOWNLOAD_DIR = os.path.join(ROOT_DIR, "data", "downloads")
+DATABASE_DIR = os.path.join(ROOT_DIR, "data", "databases")
 
 sys.path.insert(0, os.path.join(ROOT_DIR, "apps"))
 
@@ -28,9 +30,11 @@ sys.path.insert(0, os.path.join(ROOT_DIR, "apps"))
 
 env = environ.Env()
 
+environ.Env.read_env(os.path.join(ROOT_DIR, ".env"))
+
 DJANGO_ENV = env.str("DJANGO_ENV", default="development")
 
-if DJANGO_ENV not in ("development", "production"):
+if DJANGO_ENV not in ("development", "staging", "production"):
     raise ImproperlyConfigured(
         "Unknown environment name for settings: '%s'" % DJANGO_ENV
     )
@@ -45,15 +49,27 @@ if DJANGO_ENV == "production" and DEBUG:
 # #####################
 
 INSTALLED_APPS = [
+    "dal",
+    "dal_select2",
+    "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django.contrib.sitemaps",
-    "django.contrib.admin",
-    "users.apps.Config",
-    "dataset.apps.Config",
+    "django.contrib.sites",
+    "django.contrib.flatpages",
+    "django_extensions",
+    "ckeditor",
+    "ebird.dataset.data",
+    "checklists",
+    "contact",
+    "filters",
+    "notifications",
+    "observations",
+    "pages",
+    "species",
+    "updates",
 ]
 
 MIDDLEWARE = [
@@ -90,13 +106,11 @@ if DEBUG:
     # allow connections from, but in Docker we can't use 127.0.0.1 since
     # this runs in a container but we want to access the django_debug_toolbar
     # from our browser outside of the container.
-    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+    hostname, aliases, ips = socket.gethostbyname_ex(socket.gethostname())
     INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + [
         "127.0.0.1",
         "10.0.2.2",
     ]
-
-WATCHMAN_TOKENS = env.str("DJANGO_WATCHMAN_TOKENS", None)
 
 # ############
 #   DATABASE
@@ -104,17 +118,18 @@ WATCHMAN_TOKENS = env.str("DJANGO_WATCHMAN_TOKENS", None)
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
-AUTH_USER_MODEL = "users.User"
+DB_NAME = env.str("DB_NAME", default="dataset")
 
 DATABASES = {
-    "default": env.db_url(default="postgres://project:password@localhost:5432/project")
+    "default": env.db_url(default=f"sqlite:///{DATABASE_DIR}/{DB_NAME}.sqlite3")
 }
+
 
 # ###########
 #   CACHING
 # ###########
 
-CACHES = {"default": env.cache_url(default="locmemcache://")}
+CACHES = {"default": env.cache_url(default="pymemcache://127.0.0.1:11211")}
 
 # ############
 #   SECURITY
@@ -136,6 +151,10 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+]
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
 ]
 
 # Basic security settings. We're not going to deal with HSTS settings, at least
@@ -194,10 +213,26 @@ if DJANGO_ENV == "production":
 #   INTERNATIONALIZATION
 # ########################
 
+# The locale codes should match the ones used by eBird, so the
+# species' common name for each language can be loaded using the
+# get_taxonomy function from the eBird API.
+
 LANGUAGE_CODE = "en"
+
+LANGUAGES = [
+    ("en", _("English")),
+]
+
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
+
+USE_THOUSAND_SEPARATOR = True
+
+LOCALE_PATHS = [
+    os.path.join(ROOT_DIR, "locale"),
+]
+
 
 # ##########################
 #   STATIC AND MEDIA FILES
@@ -224,17 +259,17 @@ STATICFILES_FINDERS = [
 ]
 
 STATICFILES_DIRS = [
-    os.path.join(ROOT_DIR, "static"),
+    os.path.join(ROOT_DIR, "assets"),
 ]
 
 # DJANGO_STATIC_HOST only needs to be set when using a CDN such as CloudFront
 # to cache the files served by whitenoise.
 
-STATIC_ROOT = env.str("DJANGO_STATIC_ROOT", default=os.path.join(DEPLOY_DIR, "static"))
+STATIC_ROOT = env.str("DJANGO_STATIC_ROOT", default=os.path.join(ROOT_DIR, "static"))
 STATIC_HOST = env.str("DJANGO_STATIC_HOST", default="")
 STATIC_URL = STATIC_HOST + "/static/"
 
-MEDIA_ROOT = env.str("DJANGO_MEDIA_ROOT", default=os.path.join(DEPLOY_DIR, "media"))
+MEDIA_ROOT = env.str("DJANGO_MEDIA_ROOT", default=os.path.join(ROOT_DIR, "media"))
 MEDIA_URL = "/media/"
 
 # S3 storage options for serving uploaded files from an AWS S3 Bucket.
@@ -285,15 +320,14 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
-        "json": {
-            "()": "pythonjsonlogger.jsonlogger.JsonFormatter",
-            "format": "%(asctime)s %(levelname)s %(name)s %(message)s",
+        "simple": {
+            "format": "%(asctime)s %(levelname)s %(message)s",
         },
     },
     "handlers": {
         "stdout": {
             "class": "logging.StreamHandler",
-            "formatter": "json",
+            "formatter": "simple",
         },
         "mail_admins": {
             "level": "ERROR",
@@ -320,6 +354,7 @@ LOGGING = {
 
 if DSN := env.str("DJANGO_SENTRY_DSN", default=""):
     import sentry_sdk
+
     from sentry_sdk.integrations.django import DjangoIntegration
 
     sentry_sdk.init(  # type: ignore
@@ -327,6 +362,9 @@ if DSN := env.str("DJANGO_SENTRY_DSN", default=""):
         integrations=[
             DjangoIntegration(),
         ],
+        auto_session_tracking=False,
+        traces_sample_rate=0,
+        environment="production",
     )
 
 # #########
@@ -337,10 +375,14 @@ vars().update(env.email("DJANGO_EMAIL_URL", default="consolemail://"))
 
 EMAIL_USE_SSL = env.bool("DJANGO_EMAIL_USE_SSL", default="True")
 
-if django_admins := env.str("DJANGO_ADMINS", ""):
-    ADMINS = tuple(parseaddr(email) for email in django_admins.split(","))
+if DJANGO_ADMINS := env.list("DJANGO_ADMINS", str, []):
+    ADMINS = [tuple(admin.split(":", 1)) for admin in DJANGO_ADMINS]
     LOGGING["loggers"]["django"]["handlers"].append("mail_admins")
     LOGGING["loggers"][""]["handlers"].append("mail_admins")
+
+MANAGERS = [
+    tuple(manager.split(":")) for manager in env.list("DJANGO_MANAGERS", str, [])
+]
 
 # ########
 #   SITE
@@ -356,16 +398,10 @@ ADMIN_PATH = env.str("DJANGO_ADMIN_PATH", default="admin/")
 if ADMIN_PATH[-1] != "/":
     ADMIN_PATH += "/"
 
+SITE_ID = 1
+
 # #####################
 #   DJANGO EXTENSIONS
 # #####################
 
 SHELL_PLUS = "ipython"
-
-# ################
-#   CRISPY FORMS
-# ################
-
-CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
-
-CRISPY_TEMPLATE_PACK = "bootstrap5"

@@ -1,0 +1,50 @@
+{% load i18n static %}
+{% get_current_language as language_code %}
+{% get_language_info for language_code as lang %}
+<nav class="navbar navbar-expand-lg align-items-center">
+  <div class="container-fluid">
+    <a class="navbar-brand me-4" href="{% url 'index' %}">
+     eBird Dataset Explorer
+    </a>
+    <button class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent"
+            aria-expanded="false"
+            aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 fs-5">
+      <li class="nav-item">
+        <a class="nav-link"
+           href="{% url 'checklists:list' %}">{% trans 'Checklists' %}</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link"
+           href="{% url 'observations:list' %}">{% trans 'Observations' %}</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link"
+           href="{% url 'species:list' %}">{% trans 'species.plural' %}</a>
+      </li>
+      </ul>
+      <div class="nav-item ms-auto fs-5 me-4">
+        <div class="dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+             data-bs-toggle="dropdown" aria-expanded="false">
+            {{ lang.name_local }}
+          </a>
+          <ul class="dropdown-menu">
+            {% for url, language in translations %}
+              <li><a class="dropdown-item"
+                     href="{{ url }}{% querystring %}">{{ language }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

@@ -1,11 +1,28 @@
 from django.conf import settings
+from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
+from django.contrib.flatpages.views import flatpage
 from django.urls import include, path
+from django.utils.translation import gettext_lazy as _
+from django.views.generic import RedirectView
 
-urlpatterns = [
-    path("admin/", admin.site.urls),
+from contact.views import ContactView
+
+urlpatterns = i18n_patterns(
+    path("", RedirectView.as_view(pattern_name="checklists:list"), name="index"),
+    path("autocomplete/", include("filters.urls")),
+    path(_("checklists/"), include("checklists.urls")),
+    path(_("observations/"), include("observations.urls")),
+    path(_("species/"), include("species.urls")),
+    path(_("contact/"), ContactView.as_view(), name="contact"),
+    path(_("updates/"), include("updates.urls")),
+    path(_("about/"), flatpage, {"url": _("/about/")}, name="about"),
+)
+
+urlpatterns += [
+    # Change the path to the Django Admin to something non-standard.
+    path(settings.ADMIN_PATH, admin.site.urls),  # type: ignore
 ]
-
 
 if settings.DEBUG:
     from django.conf.urls.static import static
