@@ -1,7 +1,7 @@
 [project]
 name = "ebird-dataset-explorer"
-version = "2025.07.15"
-description = "Data and statistics for checklists submitted to eBird Portugal"
+version = "0.0.0"
+description = "A Django-based web site for browsing data from the eBird Basic Dataset"
 readme = "README.md"
 license-files = ["LICENSE.txt"]
 requires-python = ">=3.12"
@@ -14,17 +14,11 @@ dependencies = [
     "ipython>=8.29.0",
     "psycopg2-binary>=2.9.10",
     "pymemcache>=4.0.0",
-    "python-dateutil>=2.9.0.post0",
     "whitenoise[brotli]>=6.8.2",
-    "ebird-codes>=0.0.2",
-    "ebird-api-requests>=4.0.1",
-    "requests>=2.32.3",
-    "lxml>=5.3.2",
-    "beautifulsoup4>=4.13.4",
     "sentry-sdk>=2.26.1",
     "django-autocomplete-light>=3.12.1",
     "django-ckeditor>=6.7.3",
-    "ebird-dataset-data==0.0.0",
+    "ebird-dataset-data==0.2.0",
 ]
 
 [tool.ruff]
@@ -62,16 +56,9 @@ testpaths = [
 log_cli = true
 
 [tool.bumpversion]
-current_version = "2025.07.15"
-parse = """(?x)                        # Verbose mode
-    (?P<release>                       # The release part
-        (?:[1-9][0-9]{3})\\.           # YYYY.
-        (?:1[0-2]|0[1-9])\\.           # 0M.
-        (?:3[0-1]|[1-2][0-9]|0[1-9])   # 0D
-    )
-    (?:\\.(?P<patch>\\d+))?            # .patch, optional
-"""
-serialize = ["{release}.{patch}", "{release}"]
+current_version = "0.0.0"
+parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)"
+serialize = ["{major}.{minor}.{patch}"]
 ignore_missing_version = false
 tag = true
 sign_tags = true
@@ -79,12 +66,8 @@ tag_name = "v{new_version}"
 tag_message = "New version: {current_version} → {new_version}"
 allow_dirty = false
 commit = true
-commit_args = "--no-verify"
 message = "New version: {current_version} → {new_version}"
-pre_commit_hooks = ["uv sync --upgrade", "git add uv.lock"]
-
-[tool.bumpversion.parts.release]
-calver_format = "{YYYY}.{0M}.{0D}"
+commit_args = ""
 
 [[tool.bumpversion.files]]
 filename = "config/__init__.py"
@@ -113,11 +96,7 @@ dev-dependencies = [
     "pytest>=8.3.3",
     "pytest-django>=4.9.0",
     "django-debug-toolbar>=4.4.6",
-    "faker>=37.1.0",
     "ruff>=0.11.5",
     "bump-my-version>=1.1.2",
-    "matplotlib>=3.10.1",
-    "jupyterlab>=4.4.1",
-    "factory-boy>=3.3.3",
     "polib>=1.2.0",
 ]

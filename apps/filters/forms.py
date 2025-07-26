@@ -187,8 +187,8 @@ class SpeciesFilter(FilterForm):
         choices = []
         if code := self.data.get("common_name"):
             choice = (
-                Species.objects.filter(species_code=code)
-                .values_list("species_code", "common_name")
+                Species.objects.filter(order=code)
+                .values_list("order", "common_name")
                 .first()
             )
             if choice:

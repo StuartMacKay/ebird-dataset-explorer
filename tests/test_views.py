@@ -18,13 +18,13 @@ autocompletes = [
     reverse("filters:observers"),
     reverse("filters:common-name"),
     reverse("filters:scientific-name"),
-    reverse("news:autocomplete"),
 ]
 
 pages = [
     (reverse("checklists:list"), None),
     (reverse("observations:list"), None),
     (reverse("species:list"), None),
+    (reverse("updates:list"), None),
     (reverse("about"), None),
     (reverse("contact"), None),
 ]

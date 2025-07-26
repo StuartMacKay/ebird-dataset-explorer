@@ -47,7 +47,7 @@
          title="{% trans 'Show species seen by this observer' %}">{{ observation.observer }}</a>
       {% if not observation.has_media %}
         <a class="dark-link"
-           href="{{ observation.checklist.url }}"
+           href="https://ebird.org/checklist/{{ observation.checklist.identifier }}"
            target="_blank"
            title="{% trans 'View this checklist on eBird.org' %}">
           <i class="bi bi-box-arrow-up-right"></i>
@@ -66,7 +66,7 @@
           <i class="bi bi-camera-video-fill me-1"></i>
         {% endif %}
         <a class="dark-link"
-           href="{{ observation.checklist.url }}"
+           href="https://ebird.org/checklist/{{ observation.checklist.identifier }}"
            target="_blank"
            title="{% trans 'View this checklist on eBird.org' %}">
           <i class="bi bi-box-arrow-up-right"></i>

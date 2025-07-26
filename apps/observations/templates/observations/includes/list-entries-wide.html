@@ -30,7 +30,7 @@
       <td class="text-end">{% if observation.count %}{{ observation.count }}{% else %}X{% endif %}</td>
       <td>
         <a class="dark-link"
-           href="{% querystring species=observation.species.species_code %}"
+           href="{% querystring species=observation.species.order %}"
            title="{% trans 'Show observations of this species' %}">
           {{ observation.species.common_name }}
         </a>
@@ -76,7 +76,7 @@
       </td>
       <td>
         <a class="dark-link"
-           href="{{ observation.checklist.url }}"
+           href="https://ebird.org/checklist/{{ observation.checklist.identifier }}"
            target="_blank"
            title="{% trans 'View this checklist on eBird.org' %}">
           <i class="bi bi-box-arrow-up-right"></i>

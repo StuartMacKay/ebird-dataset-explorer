@@ -1,5 +1,3 @@
-import json
-
 from django.db.models import Q
 
 from dal import autocomplete
@@ -59,21 +57,16 @@ class ObserverList(autocomplete.Select2ListView):
 class CommonNameList(autocomplete.Select2ListView):
     def get_list(self):
         queryset = (
-            Species.objects.all()
-            .values_list("species_code", "common_name")
-            .order_by("order")
+            Species.objects.all().values_list("order", "common_name").order_by("order")
         )
-        return [
-            ("%s" % code, json.loads(name)[self.request.LANGUAGE_CODE])
-            for code, name in queryset
-        ]
+        return [(code, name) for code, name in queryset]
 
 
 class ScientificNameList(autocomplete.Select2ListView):
     def get_list(self):
         queryset = (
             Species.objects.all()
-            .values_list("species_code", "scientific_name")
+            .values_list("order", "scientific_name")
             .order_by("order")
         )
         return [(code, name) for code, name in queryset]

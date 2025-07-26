@@ -3,33 +3,18 @@
 # The following URLs display the raw data from the eBird API and so are
 # not unique to this site:
 #
-#   /en/checklists/, /pt/listas/
-#   /en/observations/, /pt/observações/
-#   /en/species/, /pt/espécies/
-#
-# The weekly and monthly news pages present the same date as the Latest
-# News, just over a different/longer period:
-#
-#   /en/news/weekly/<year>/<week>/
-#   /pt/notícias/semanal/<year>/<week>/
-#   /en/news/monthly/<year>/<month>/
-#   /pt/notícias/mensal/<year>/<month>/
+#   /checklists/
+#   /observations/
+#   /species/
 #
 # The Contact page is of no interest to anyone:
 #
-#   /en/contact/
-#   /pt/contacto/
+#   /contact/
 
 User-Agent: *
-Disallow: /en/checklists/
-Disallow: /pt/listas/
-Disallow: /en/observations/
-Disallow: /pt/observações/
+Disallow: /checklists/
+Disallow: /observations/
 Disallow: /en/news/weekly/
-Disallow: /pt/notícias/semanal/
-Disallow: /en/news/monthly/
-Disallow: /pt/notícias/mensal/
-Disallow: /en/contact/
-Disallow: /pt/contacto/
+Disallow: /contact/
 
-Sitemap: https://www.ebirders.pt/sitemap.xml
+Sitemap: /sitemap.xml
