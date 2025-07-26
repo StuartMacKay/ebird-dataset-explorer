@@ -7,4 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Latest
 
+## 0.1.0
+
 - Initial release based on the codebase from the ebirders-pt project.
